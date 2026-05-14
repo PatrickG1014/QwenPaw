@@ -159,6 +159,7 @@ QwenPaw 当前支持的云提供商包括：
 - Zhipu
 - SiliconFlow（硅基流动）
 - OpenCode
+- GitHub Copilot
 
 > 由于部分供应商针对中国大陆以及其他地区提供了不同的 API 域名，请根据您所在的地区选择正确的供应商
 
@@ -179,6 +180,12 @@ QwenPaw 当前支持的云提供商包括：
 如果预设的模型无法满足需求，您也可以在模型管理页面选择 **添加模型** 来添加增加新的模型，添加时需要提供 **模型 ID**（API 实际使用的模型标识，通常可以从提供商文档中获得）以及 **模型名称** （用于在界面中展示）。手动添加的模型同样可以通过 **测试连接** 来验证是否能够正常使用。
 
 ![添加模型](https://img.alicdn.com/imgextra/i1/O1CN014GTNqr1t4tipsb3OF_!!6000000005849-2-tps-1260-1588.png)
+
+### GitHub Copilot
+
+GitHub Copilot 使用 GitHub Device Code 认证，不需要填写 API Key。进入 **设置 -> 模型 -> GitHub Copilot**，点击 **登录**，打开验证 URL，并输入 QwenPaw 显示的用户码完成授权。
+
+授权完成后，QwenPaw 会在本地记住该凭证；除非 GitHub 授权被撤销，重启 QwenPaw 后无需重新登录。您也可以在同一个提供商设置页退出登录。
 
 ## 自定义供应商配置
 
