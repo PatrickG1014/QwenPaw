@@ -21,6 +21,7 @@ from ..config.config import ModelSlotConfig
 from ..exceptions import ProviderError
 from .anthropic_provider import AnthropicProvider
 from .gemini_provider import GeminiProvider
+from .github_copilot_provider import PROVIDER_GITHUB_COPILOT
 from .ollama_provider import OllamaProvider
 from .openai_provider import OpenAIProvider
 from .lmstudio_provider import LMStudioProvider
@@ -30,6 +31,7 @@ from .provider import (
     ProviderInfo,
 )
 from .openrouter_provider import OpenRouterProvider
+from .auth.adapters import register_builtin_auth_adapters
 from ..security.secret_store import (
     PROVIDER_SECRET_FIELDS,
     decrypt_dict_fields,
@@ -1003,6 +1005,7 @@ class ProviderManager:  # pylint: disable=too-many-public-methods
         self._add_builtin(PROVIDER_OLLAMA)
         self._add_builtin(PROVIDER_LMSTUDIO)
         self._add_builtin(PROVIDER_OPENROUTER)
+        self._add_builtin(PROVIDER_GITHUB_COPILOT)
         self._add_builtin(PROVIDER_MODELSCOPE)
         self._add_builtin(PROVIDER_DASHSCOPE)
         self._add_builtin(PROVIDER_ALIYUN_CODINGPLAN)
@@ -1026,6 +1029,7 @@ class ProviderManager:  # pylint: disable=too-many-public-methods
         self._add_builtin(PROVIDER_SILICONFLOW_INTL)
         self._add_builtin(PROVIDER_VOLCENGINE_CN)
         self._add_builtin(PROVIDER_VOLCENGINE_CN_CODINGPLAN)
+        register_builtin_auth_adapters()
 
     def _add_builtin(self, provider: Provider):
         self.builtin_providers[provider.id] = provider
