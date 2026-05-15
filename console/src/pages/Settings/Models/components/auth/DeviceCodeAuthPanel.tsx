@@ -72,15 +72,18 @@ export function DeviceCodeAuthPanel({
 
   const schedulePoll = useCallback(
     (currentFlow: AuthStartResult) => {
+      if (!mounted.current) return;
       stopPolling();
       pollTimer.current = setTimeout(async () => {
         try {
           const next = await refreshStatus(currentFlow.flow_id);
-          if (next.status === "pending") {
+          if (mounted.current && next.status === "pending") {
             schedulePoll(currentFlow);
           }
         } catch {
-          schedulePoll(currentFlow);
+          if (mounted.current) {
+            schedulePoll(currentFlow);
+          }
         }
       }, secondsToMs(currentFlow.interval));
     },
@@ -156,7 +159,9 @@ export function DeviceCodeAuthPanel({
   };
 
   const hint =
-    typeof provider.meta?.auth_hint === "string"
+    provider.id === "github-copilot"
+      ? t("models.providerAuthHintGithubCopilot")
+      : typeof provider.meta?.auth_hint === "string"
       ? provider.meta.auth_hint
       : t("models.providerAuthDeviceCodeHint");
   const isAuthenticated = status.status === "authenticated";

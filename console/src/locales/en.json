@@ -1263,6 +1263,7 @@
     "providerAuth": "Auth",
     "providerAuthTitle": "{{name}} Authentication",
     "providerAuthDeviceCodeHint": "This provider uses device-code authentication. Start sign-in, open the verification URL, and enter the user code.",
+    "providerAuthHintGithubCopilot": "GitHub Copilot uses GitHub Device Code authentication. Sign in with your GitHub account to use Copilot models.",
     "providerAuthStatus": "Status",
     "providerAuthSignIn": "Sign in",
     "providerAuthSignOut": "Sign out",
