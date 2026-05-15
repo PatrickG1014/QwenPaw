@@ -511,6 +511,7 @@
     "providerAuthUserCode": "Kode pengguna",
     "providerAuthVerificationUrl": "URL verifikasi",
     "providerAuthOpen": "Buka",
+    "providerAuthDeviceCodeInstructions": "Buka URL verifikasi, masukkan kode, lalu setujui perangkat. Panel ini akan diperbarui otomatis.",
     "providerAuthCodeCopied": "Kode pengguna disalin"
   },
   "mcp": {

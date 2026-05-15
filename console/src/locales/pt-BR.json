@@ -1183,6 +1183,7 @@
     "providerAuthUserCode": "Código do usuário",
     "providerAuthVerificationUrl": "URL de verificação",
     "providerAuthOpen": "Abrir",
+    "providerAuthDeviceCodeInstructions": "Abra o URL de verificação, insira o código e aprove o dispositivo. Este painel será atualizado automaticamente.",
     "providerAuthCodeCopied": "Código do usuário copiado",
     "active": "Active: {{provider}} / {{model}}",
     "provider": "Provedor",

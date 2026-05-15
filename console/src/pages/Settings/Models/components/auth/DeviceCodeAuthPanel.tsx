@@ -165,6 +165,7 @@ export function DeviceCodeAuthPanel({
       ? provider.meta.auth_hint
       : t("models.providerAuthDeviceCodeHint");
   const isAuthenticated = status.status === "authenticated";
+  const isWaitingForAuth = status.status === "pending" && Boolean(flow);
   const accountLabel = status.account_label || "";
   const inactiveStatusText =
     status.status === "expired"
@@ -270,6 +271,16 @@ export function DeviceCodeAuthPanel({
               </Button>
             )}
           </div>
+          <div
+            style={{
+              color: "rgba(0,0,0,0.55)",
+              fontSize: 12,
+              lineHeight: 1.5,
+              marginTop: 10,
+            }}
+          >
+            {t("models.providerAuthDeviceCodeInstructions")}
+          </div>
         </div>
       )}
       <div style={{ display: "flex", gap: 8 }}>
@@ -282,8 +293,15 @@ export function DeviceCodeAuthPanel({
             {t("models.providerAuthSignOut")}
           </Button>
         ) : (
-          <Button type="primary" loading={starting} onClick={handleSignIn}>
-            {t("models.providerAuthSignIn")}
+          <Button
+            type="primary"
+            loading={starting}
+            disabled={isWaitingForAuth}
+            onClick={handleSignIn}
+          >
+            {isWaitingForAuth
+              ? t("models.providerAuthWaiting")
+              : t("models.providerAuthSignIn")}
           </Button>
         )}
       </div>

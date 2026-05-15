@@ -999,6 +999,7 @@
     "providerAuthUserCode": "ユーザーコード",
     "providerAuthVerificationUrl": "確認URL",
     "providerAuthOpen": "開く",
+    "providerAuthDeviceCodeInstructions": "確認URLを開き、コードを入力してデバイスを承認してください。このパネルは自動的に更新されます。",
     "providerAuthCodeCopied": "ユーザーコードをコピーしました",
     "active": "アクティブ: {{provider}} / {{model}}",
     "provider": "プロバイダー",

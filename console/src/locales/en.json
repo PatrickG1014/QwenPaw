@@ -1277,6 +1277,7 @@
     "providerAuthUserCode": "User code",
     "providerAuthVerificationUrl": "Verification URL",
     "providerAuthOpen": "Open",
+    "providerAuthDeviceCodeInstructions": "Open the verification URL, enter the code, and approve the device. This panel updates automatically.",
     "providerAuthCodeCopied": "User code copied",
     "active": "Active: {{provider}} / {{model}}",
     "provider": "Provider",

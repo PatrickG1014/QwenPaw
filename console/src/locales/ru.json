@@ -999,6 +999,7 @@
     "providerAuthUserCode": "Код пользователя",
     "providerAuthVerificationUrl": "URL проверки",
     "providerAuthOpen": "Открыть",
+    "providerAuthDeviceCodeInstructions": "Откройте URL проверки, введите код и подтвердите устройство. Эта панель обновится автоматически.",
     "providerAuthCodeCopied": "Код пользователя скопирован",
     "active": "Активно: {{provider}} / {{model}}",
     "provider": "Провайдер",

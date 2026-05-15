@@ -1140,6 +1140,7 @@
     "providerAuthUserCode": "用户码",
     "providerAuthVerificationUrl": "验证 URL",
     "providerAuthOpen": "打开",
+    "providerAuthDeviceCodeInstructions": "打开验证 URL，输入用户码并完成授权；完成后这里会自动更新。",
     "providerAuthCodeCopied": "用户码已复制",
     "active": "活动：{{provider}} / {{model}}",
     "provider": "提供商",
