@@ -52,11 +52,16 @@ export const RemoteProviderCard = React.memo(function RemoteProviderCard({
   const totalCount = provider.models.length + provider.extra_models.length;
 
   let isConfigured = false;
+  const isOAuthProvider = provider.auth_type === "oauth_device_code";
+  const authStatus = provider.auth?.status;
+  const accountLabel = provider.auth?.account_label;
 
   if (provider.id === "qwenpaw-local") {
     isConfigured = true;
   } else if (provider.is_custom && provider.base_url) {
     isConfigured = true;
+  } else if (isOAuthProvider) {
+    isConfigured = authStatus === "authenticated";
   } else if (provider.require_api_key === false) {
     isConfigured = true;
   } else if (provider.require_api_key && provider.api_key) {
@@ -139,8 +144,24 @@ export const RemoteProviderCard = React.memo(function RemoteProviderCard({
           )}
         </div>
         <div className={styles.infoRow}>
-          <span className={styles.infoLabel}>API Key:</span>
-          {provider.api_key ? (
+          <span className={styles.infoLabel}>
+            {isOAuthProvider ? t("models.providerAuth") : "API Key"}:
+          </span>
+          {isOAuthProvider ? (
+            authStatus === "authenticated" ? (
+              <span className={styles.infoValue}>
+                {accountLabel
+                  ? t("models.providerAuthSignedInAs", {
+                      account: accountLabel,
+                    })
+                  : t("models.providerAuthSignedIn")}
+              </span>
+            ) : (
+              <span className={styles.infoEmpty}>
+                {t("models.providerAuthNotSignedIn")}
+              </span>
+            )
+          ) : provider.api_key ? (
             <span className={styles.infoValue}>{provider.api_key}</span>
           ) : (
             <span className={styles.infoEmpty}>{t("models.notSet")}</span>

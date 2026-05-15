@@ -360,6 +360,44 @@ async def test_remove_custom_provider_missing_file_is_safe(
     assert manager.get_provider("custom-to-remove") is None
 
 
+async def test_builtin_discovery_saves_only_non_builtin_extra_models(
+    isolated_secret_dir,
+    monkeypatch,
+) -> None:
+    manager = ProviderManager()
+    provider = manager.get_provider("openai")
+    assert provider is not None
+    provider.models = [
+        ModelInfo(id="gpt-4o", name="GPT-4o"),
+        ModelInfo(id="gpt-4.1", name="GPT-4.1"),
+    ]
+
+    async def fake_fetch_models(self):
+        return [
+            ModelInfo(id="gpt-4o", name="GPT-4o"),
+            ModelInfo(id="gpt-4.1", name="GPT-4.1"),
+            ModelInfo(id="new-discovered-model", name="New Discovered Model"),
+        ]
+
+    monkeypatch.setattr(OpenAIProvider, "fetch_models", fake_fetch_models)
+
+    models = await manager.fetch_provider_models("openai", save=True)
+
+    assert [model.id for model in models] == [
+        "gpt-4o",
+        "gpt-4.1",
+        "new-discovered-model",
+    ]
+    assert [model.id for model in provider.extra_models] == [
+        "new-discovered-model",
+    ]
+    persisted = manager.load_provider("openai", is_builtin=True)
+    assert persisted is not None
+    assert [model.id for model in persisted.extra_models] == [
+        "new-discovered-model",
+    ]
+
+
 def test_load_provider_invalid_json_returns_none(isolated_secret_dir) -> None:
     manager = ProviderManager()
     bad_file = manager.custom_path / "bad-provider.json"

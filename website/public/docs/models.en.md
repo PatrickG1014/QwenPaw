@@ -159,6 +159,7 @@ Currently supported cloud providers include:
 - Zhipu
 - SiliconFlow
 - OpenCode
+- GitHub Copilot
 
 > Some providers offer different base URLs for Mainland China and other regions. Please select the correct provider based on your location.
 
@@ -179,6 +180,12 @@ Once the cloud provider is configured, you can further check if the models are a
 If the preset models do not meet your needs, you can also click **Add Model** on the model management page to add new models. When adding, you need to provide the **Model ID** (the identifier used by the API, usually found in the provider's documentation) and the **Model Name** (for display in the UI). Manually added models can also be tested using the **Test Connection** button.
 
 ![Add Model](https://img.alicdn.com/imgextra/i3/O1CN01gvYta11FXfyhNGE89_!!6000000000497-2-tps-1260-1692.png)
+
+### GitHub Copilot
+
+GitHub Copilot uses GitHub Device Code authentication instead of an API Key. Go to **Settings -> Models -> GitHub Copilot**, click **Sign in**, open the verification URL, and enter the user code shown in QwenPaw.
+
+After authorization, QwenPaw remembers the credential locally, so restarting QwenPaw does not require signing in again unless the GitHub authorization is revoked. You can sign out from the same provider settings page.
 
 ## Custom Provider Configuration
 

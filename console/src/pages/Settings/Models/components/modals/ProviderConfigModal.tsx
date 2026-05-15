@@ -6,10 +6,12 @@ import { ApiOutlined, DownOutlined, RightOutlined } from "@ant-design/icons";
 import type {
   BaseUrlOption,
   ProviderConfigRequest,
+  ProviderInfo,
 } from "../../../../../api/types";
 import api from "../../../../../api";
 import { useTranslation } from "react-i18next";
 import { getLocalizedTestConnectionMessage } from "./testConnectionMessage";
+import { ProviderAuthPanel } from "../auth";
 import styles from "../../index.module.less";
 
 interface ProviderConfigFormValues
@@ -240,19 +242,7 @@ function JsonCodeEditor({
 }
 
 interface ProviderConfigModalProps {
-  provider: {
-    id: string;
-    name: string;
-    api_key?: string;
-    api_key_prefix?: string;
-    base_url?: string;
-    is_custom: boolean;
-    freeze_url: boolean;
-    chat_model: string;
-    support_connection_check: boolean;
-    generate_kwargs: Record<string, unknown>;
-    meta?: Record<string, unknown>;
-  };
+  provider: ProviderInfo;
   activeModels: any;
   open: boolean;
   onClose: () => void;
@@ -275,6 +265,7 @@ export function ProviderConfigModal({
   const { message } = useAppMessage();
   const selectedChatModel = Form.useWatch("chat_model", form);
   const canEditBaseUrl = !provider.freeze_url;
+  const isOAuthProvider = provider.auth_type === "oauth_device_code";
 
   const baseUrlOptions = useMemo<BaseUrlOption[]>(() => {
     const raw = provider.meta?.base_url_options;
@@ -428,7 +419,7 @@ export function ProviderConfigModal({
 
       // Validate connection before saving
       // For local providers, we might skip this or just check if models exist (which the backend does)
-      if (provider.support_connection_check) {
+      if (provider.support_connection_check && !isOAuthProvider) {
         const result = await api.testProviderConnection(provider.id, {
           api_key: values.api_key,
           base_url: values.base_url,
@@ -539,7 +530,7 @@ export function ProviderConfigModal({
       footer={
         <div className={styles.modalFooter}>
           <div className={styles.modalFooterLeft}>
-            {provider.api_key && (
+            {!isOAuthProvider && provider.api_key && (
               <Button danger size="small" onClick={handleRevoke}>
                 {t("models.revokeAuthorization")}
               </Button>
@@ -584,6 +575,8 @@ export function ProviderConfigModal({
         }}
         onValuesChange={() => setFormDirty(true)}
       >
+        <ProviderAuthPanel provider={provider} onAuthChanged={onSaved} />
+
         {provider.is_custom && (
           <Form.Item
             name="chat_model"
@@ -666,33 +659,34 @@ export function ProviderConfigModal({
           )}
         </Form.Item>
 
-        {/* API Key */}
-        <Form.Item
-          name="api_key"
-          label={t("models.apiKey")}
-          rules={[
-            {
-              validator: (_, value) => {
-                if (
-                  value &&
-                  provider.api_key_prefix &&
-                  !value.startsWith(provider.api_key_prefix)
-                ) {
-                  return Promise.reject(
-                    new Error(
-                      t("models.apiKeyShouldStart", {
-                        prefix: provider.api_key_prefix,
-                      }),
-                    ),
-                  );
-                }
-                return Promise.resolve();
+        {!isOAuthProvider && (
+          <Form.Item
+            name="api_key"
+            label={t("models.apiKey")}
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (
+                    value &&
+                    provider.api_key_prefix &&
+                    !value.startsWith(provider.api_key_prefix)
+                  ) {
+                    return Promise.reject(
+                      new Error(
+                        t("models.apiKeyShouldStart", {
+                          prefix: provider.api_key_prefix,
+                        }),
+                      ),
+                    );
+                  }
+                  return Promise.resolve();
+                },
               },
-            },
-          ]}
-        >
-          <Input.Password placeholder={apiKeyPlaceholder} />
-        </Form.Item>
+            ]}
+          >
+            <Input.Password placeholder={apiKeyPlaceholder} />
+          </Form.Item>
+        )}
 
         <div className={styles.advancedConfigSection}>
           <button
