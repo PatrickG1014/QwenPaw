@@ -493,6 +493,26 @@
     "createFailed": "Gagal membuat cadangan",
     "restoreTitle": "Pulihkan Cadangan"
   },
+  "models": {
+    "providerAuth": "Autentikasi",
+    "providerAuthTitle": "Autentikasi {{name}}",
+    "providerAuthDeviceCodeHint": "Penyedia ini menggunakan autentikasi kode perangkat. Mulai masuk, buka URL verifikasi, lalu masukkan kode pengguna.",
+    "providerAuthHintGithubCopilot": "GitHub Copilot menggunakan autentikasi Kode Perangkat GitHub. Masuk dengan akun GitHub Anda untuk menggunakan model Copilot.",
+    "providerAuthStatus": "Status",
+    "providerAuthSignIn": "Masuk",
+    "providerAuthSignOut": "Keluar",
+    "providerAuthSignOutConfirm": "Keluar dari {{name}}? Kredensial OAuth lokal akan dihapus.",
+    "providerAuthSignedIn": "Sudah masuk",
+    "providerAuthSignedInAs": "Masuk sebagai {{account}}",
+    "providerAuthNotSignedIn": "Belum masuk",
+    "providerAuthWaiting": "Menunggu otorisasi",
+    "providerAuthFailed": "Autentikasi gagal",
+    "providerAuthExpired": "Kode masuk sudah kedaluwarsa. Mulai masuk lagi untuk mendapatkan kode baru.",
+    "providerAuthUserCode": "Kode pengguna",
+    "providerAuthVerificationUrl": "URL verifikasi",
+    "providerAuthOpen": "Buka",
+    "providerAuthCodeCopied": "Kode pengguna disalin"
+  },
   "mcp": {
     "title": "Klien MCP",
     "create": "Buat Klien",
