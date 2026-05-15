@@ -1135,6 +1135,7 @@
     "providerAuthNotSignedIn": "未登录",
     "providerAuthWaiting": "等待授权",
     "providerAuthFailed": "认证失败",
+    "providerAuthExpired": "登录码已过期。请重新点击登录获取新的用户码。",
     "providerAuthUserCode": "用户码",
     "providerAuthVerificationUrl": "验证 URL",
     "providerAuthOpen": "打开",

@@ -1272,6 +1272,7 @@
     "providerAuthNotSignedIn": "Not signed in",
     "providerAuthWaiting": "Waiting for authorization",
     "providerAuthFailed": "Authentication failed",
+    "providerAuthExpired": "The sign-in code expired. Start sign-in again to get a new code.",
     "providerAuthUserCode": "User code",
     "providerAuthVerificationUrl": "Verification URL",
     "providerAuthOpen": "Open",

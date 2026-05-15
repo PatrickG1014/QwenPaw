@@ -161,6 +161,12 @@ export function DeviceCodeAuthPanel({
       : t("models.providerAuthDeviceCodeHint");
   const isAuthenticated = status.status === "authenticated";
   const accountLabel = status.account_label || "";
+  const inactiveStatusText =
+    status.status === "expired"
+      ? t("models.providerAuthExpired")
+      : status.status === "error"
+      ? status.message || t("models.providerAuthFailed")
+      : t("models.providerAuthNotSignedIn");
 
   return (
     <div
@@ -203,9 +209,7 @@ export function DeviceCodeAuthPanel({
           </span>
         ) : (
           <span style={{ color: "rgba(0,0,0,0.55)" }}>
-            {status.status === "error" || status.status === "expired"
-              ? status.message || t("models.providerAuthFailed")
-              : t("models.providerAuthNotSignedIn")}
+            {inactiveStatusText}
           </span>
         )}
       </div>
