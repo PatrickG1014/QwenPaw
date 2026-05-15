@@ -1175,7 +1175,15 @@ class ProviderManager:  # pylint: disable=too-many-public-methods
         try:
             models = await provider.fetch_models()
             if save:
-                provider.extra_models = models
+                if provider_id in self.builtin_providers:
+                    builtin_model_ids = {model.id for model in provider.models}
+                    provider.extra_models = [
+                        model
+                        for model in models
+                        if model.id not in builtin_model_ids
+                    ]
+                else:
+                    provider.extra_models = models
                 # Save provider config to appropriate location
                 is_plugin = provider_id in self.plugin_providers
                 if is_plugin:
