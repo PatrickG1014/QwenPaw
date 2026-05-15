@@ -68,7 +68,7 @@ def _adapter(
 
     transport = httpx.MockTransport(handler)
     return GitHubCopilotOAuthAdapter(
-        credential_store=OAuthCredentialStore(tmp_path / "oauth"),
+        credential_store=OAuthCredentialStore(tmp_path / "providers"),
         http_client_factory=lambda: httpx.AsyncClient(transport=transport),
         token_refresh_buffer=token_refresh_buffer,
     )
@@ -143,7 +143,7 @@ async def test_poll_pending_does_not_save_credential(
     status = await adapter.poll(provider, start.flow_id)
 
     assert status.status == ProviderAuthStatus.PENDING
-    assert adapter.credential_store.load(provider.id) is None
+    assert adapter.load_credential(provider.id) is None
 
 
 async def test_poll_slow_down_increases_interval(
@@ -211,7 +211,7 @@ async def test_poll_authorized_saves_credential_and_clears_session(
     assert status.status == ProviderAuthStatus.AUTHENTICATED
     assert status.account_label == "octocat"
     assert start.flow_id not in adapter._device_sessions
-    credential = adapter.credential_store.load(provider.id)
+    credential = adapter.load_credential(provider.id)
     assert credential is not None
     assert credential.access_token == "gho_test"
     assert credential.account_label == "octocat"
@@ -250,7 +250,7 @@ async def test_restart_restore_status(
     tmp_path: Path,
     provider: OpenAIProvider,
 ) -> None:
-    store = OAuthCredentialStore(tmp_path / "oauth")
+    store = OAuthCredentialStore(tmp_path / "providers")
     store.save(
         OAuthCredential(
             provider_id=provider.id,
@@ -260,9 +260,10 @@ async def test_restart_restore_status(
             created_at=1,
             updated_at=2,
         ),
+        "builtin",
     )
     adapter = GitHubCopilotOAuthAdapter(credential_store=store)
-    credential = store.load(provider.id)
+    credential = store.load(provider.id, "builtin")
 
     status = await adapter.get_status(provider, credential)
 
@@ -275,7 +276,7 @@ async def test_get_copilot_token_is_lazy_and_cached(
     provider: OpenAIProvider,
 ) -> None:
     calls = {"count": 0}
-    store = OAuthCredentialStore(tmp_path / "oauth")
+    store = OAuthCredentialStore(tmp_path / "providers")
     store.save(
         OAuthCredential(
             provider_id=provider.id,
@@ -284,6 +285,7 @@ async def test_get_copilot_token_is_lazy_and_cached(
             created_at=1,
             updated_at=2,
         ),
+        "builtin",
     )
 
     def token_handler(request: httpx.Request) -> httpx.Response:
@@ -326,7 +328,7 @@ async def test_get_copilot_token_401_deletes_credential(
             ),
         },
     )
-    adapter.credential_store.save(
+    adapter.save_credential(
         OAuthCredential(
             provider_id=provider.id,
             access_token="gho_revoked",
@@ -338,7 +340,7 @@ async def test_get_copilot_token_401_deletes_credential(
     with pytest.raises(ProviderAuthRequiredError):
         await adapter.get_copilot_token(provider.id)
 
-    assert adapter.credential_store.load(provider.id) is None
+    assert adapter.load_credential(provider.id) is None
 
 
 async def test_get_copilot_token_network_error_keeps_credential(
@@ -349,7 +351,7 @@ async def test_get_copilot_token_network_error_keeps_credential(
         raise httpx.ConnectError("temporary", request=request)
 
     adapter = _adapter(tmp_path, {("GET", COPILOT_TOKEN_URL): handler})
-    adapter.credential_store.save(
+    adapter.save_credential(
         OAuthCredential(
             provider_id=provider.id,
             access_token="gho_saved",
@@ -361,7 +363,7 @@ async def test_get_copilot_token_network_error_keeps_credential(
     with pytest.raises(ProviderAuthTemporaryError):
         await adapter.get_copilot_token(provider.id)
 
-    assert adapter.credential_store.load(provider.id) is not None
+    assert adapter.load_credential(provider.id) is not None
 
 
 async def test_logout_clears_local_state(
@@ -369,7 +371,7 @@ async def test_logout_clears_local_state(
     provider: OpenAIProvider,
 ) -> None:
     adapter = _adapter(tmp_path, {})
-    adapter.credential_store.save(
+    adapter.save_credential(
         OAuthCredential(
             provider_id=provider.id,
             access_token="gho_saved",
@@ -387,8 +389,8 @@ async def test_logout_clears_local_state(
         interval=5,
     )
 
-    await adapter.logout(provider, adapter.credential_store.load(provider.id))
+    await adapter.logout(provider, adapter.load_credential(provider.id))
 
-    assert adapter.credential_store.load(provider.id) is None
+    assert adapter.load_credential(provider.id) is None
     assert provider.id not in adapter._runtime_tokens
     assert not adapter._device_sessions

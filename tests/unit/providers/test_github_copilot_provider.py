@@ -40,7 +40,7 @@ def _isolate_auth(tmp_path: Path, monkeypatch):
 @pytest.fixture
 def adapter(tmp_path: Path) -> GitHubCopilotOAuthAdapter:
     adapter = GitHubCopilotOAuthAdapter(
-        credential_store=OAuthCredentialStore(tmp_path / "oauth"),
+        credential_store=OAuthCredentialStore(tmp_path / "providers"),
     )
     auth_registry.register(adapter)
     return adapter
@@ -74,7 +74,7 @@ def test_default_provider_metadata() -> None:
 async def test_get_info_does_not_expose_token(
     adapter: GitHubCopilotOAuthAdapter,
 ) -> None:
-    adapter.credential_store.save(
+    adapter.save_credential(
         OAuthCredential(
             provider_id="github-copilot",
             access_token="gho_secret",
@@ -117,7 +117,7 @@ async def test_fetch_models_merges_discovered_models(
     adapter: GitHubCopilotOAuthAdapter,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    adapter.credential_store.save(
+    adapter.save_credential(
         OAuthCredential(
             provider_id="github-copilot",
             access_token="gho_secret",

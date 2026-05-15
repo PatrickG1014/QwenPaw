@@ -17,7 +17,7 @@ from pydantic import BaseModel
 from qwenpaw.__version__ import __version__ as QWENPAW_VERSION
 
 from ..adapter import ProviderAuthAdapter
-from ..credential_store import OAuthCredentialStore
+from ..credential_store import OAuthCredentialStore, ProviderCredentialType
 from ..models import (
     AuthStartRequest,
     AuthStartResult,
@@ -44,6 +44,7 @@ DEFAULT_COPILOT_API_BASE_URL = "https://api.githubcopilot.com"
 DEFAULT_EDITOR_VERSION = "vscode/1.95.0"
 DEFAULT_PLUGIN_VERSION = f"qwenpaw/{QWENPAW_VERSION}"
 DEFAULT_USER_AGENT = f"QwenPaw/{QWENPAW_VERSION}"
+GITHUB_COPILOT_PROVIDER_TYPE: ProviderCredentialType = "builtin"
 
 
 class ProviderAuthRequiredError(Exception):
@@ -260,7 +261,7 @@ class GitHubCopilotOAuthAdapter(ProviderAuthAdapter):
             created_at=now,
             updated_at=now,
         )
-        self.credential_store.save(credential)
+        self.save_credential(credential)
         self._device_sessions.pop(flow_id, None)
         return AuthStatusResult(
             status=ProviderAuthStatus.AUTHENTICATED,
@@ -275,7 +276,7 @@ class GitHubCopilotOAuthAdapter(ProviderAuthAdapter):
         credential: OAuthCredential | None,  # pylint: disable=unused-argument
     ) -> None:
         """Clear local Copilot auth state."""
-        self.credential_store.delete(provider.id)
+        self.delete_credential(provider.id)
         self._runtime_tokens.pop(provider.id, None)
         self._runtime_locks.pop(provider.id, None)
         self._device_sessions.clear()
@@ -303,8 +304,29 @@ class GitHubCopilotOAuthAdapter(ProviderAuthAdapter):
 
     def has_valid_credential(self, provider_id: str) -> bool:
         """Return whether a GitHub OAuth credential exists locally."""
-        credential = self.credential_store.load(provider_id)
+        credential = self.load_credential(provider_id)
         return bool(credential and credential.access_token)
+
+    def load_credential(self, provider_id: str) -> OAuthCredential | None:
+        """Load a GitHub Copilot OAuth credential from builtin storage."""
+        return self.credential_store.load(
+            provider_id,
+            GITHUB_COPILOT_PROVIDER_TYPE,
+        )
+
+    def save_credential(self, credential: OAuthCredential) -> None:
+        """Save a GitHub Copilot OAuth credential to builtin storage."""
+        self.credential_store.save(
+            credential,
+            GITHUB_COPILOT_PROVIDER_TYPE,
+        )
+
+    def delete_credential(self, provider_id: str) -> None:
+        """Delete a GitHub Copilot OAuth credential from builtin storage."""
+        self.credential_store.delete(
+            provider_id,
+            GITHUB_COPILOT_PROVIDER_TYPE,
+        )
 
     async def get_copilot_token(
         self,
@@ -330,7 +352,7 @@ class GitHubCopilotOAuthAdapter(ProviderAuthAdapter):
                 and not cached.is_expired(self._token_refresh_buffer)
             ):
                 return cached
-            credential = self.credential_store.load(provider_id)
+            credential = self.load_credential(provider_id)
             if not credential or not credential.access_token:
                 raise ProviderAuthRequiredError(
                     "GitHub Copilot is not authenticated.",
@@ -457,7 +479,7 @@ class GitHubCopilotOAuthAdapter(ProviderAuthAdapter):
                     },
                 )
                 if response.status_code == 401:
-                    self.credential_store.delete(credential.provider_id)
+                    self.delete_credential(credential.provider_id)
                     self._runtime_tokens.pop(credential.provider_id, None)
                     client_obj = self._http_clients.pop(
                         credential.provider_id,

@@ -203,8 +203,9 @@ class GitHubCopilotProvider(OpenAIProvider):
         """Return provider info with credential-store backed auth status."""
         info = await super().get_info(mock_secret=mock_secret)
         try:
-            credential = self._auth_adapter().credential_store.load(self.id)
-            status = await self._auth_adapter().get_status(self, credential)
+            adapter = self._auth_adapter()
+            credential = adapter.load_credential(self.id)
+            status = await adapter.get_status(self, credential)
             info.auth = ProviderAuthInfo(
                 type=ProviderAuthType.OAUTH_DEVICE_CODE,
                 status=status.status,
